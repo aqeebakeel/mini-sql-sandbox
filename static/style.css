@@ -1,0 +1,212 @@
+/* General Body */
+body {
+  background: #000;
+  color: #0f0;
+  font-family: "Courier New", monospace;
+  margin: 0;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+/* Terminal Window */
+.terminal {
+  background: #111;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+  max-width: 900px;
+  margin: auto;
+  padding-bottom: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Header Bar */
+.header {
+  background: #222;
+  padding: 8px;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Header Dots */
+.dot {
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 4px;
+}
+.red { background: #ff5f56; }
+.yellow { background: #ffbd2e; }
+.green { background: #27c93f; }
+
+/* Heading Text */
+.title {
+  color: #00ff88;
+  font-size: 26px;
+  font-weight: bold;
+  text-shadow: 0 0 8px #00ff88, 0 0 15px #0ff, 0 0 25px #0f0;
+  flex-grow: 1;
+  text-align: center;
+  font-family: "Consolas", monospace;
+}
+
+/* Output */
+.output {
+  background: #000;
+  padding: 15px;
+  height: 400px; /* increased for taller tables */
+  overflow-y: auto;
+  overflow-x: auto; /* allow horizontal scroll */
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+/* Input Line */
+.input-line {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: #000;
+  border-top: 1px solid #333;
+}
+.prompt { color: #00ff88; font-weight: bold; }
+textarea {
+  background: #111;
+  border: none;
+  color: #0f0;
+  resize: none;
+  flex-grow: 1;
+  font-size: 15px;
+  padding: 6px;
+  font-family: monospace;
+  outline: none;
+  margin-left: 5px;
+}
+
+/* Caret Blinking */
+.caret {
+  display: inline-block;
+  width: 10px;
+  height: 18px;
+  background: #0f0;
+  margin-left: 2px;
+  animation: blink 1s step-start infinite;
+}
+@keyframes blink { 50% { background: transparent; } }
+
+/* Buttons */
+button {
+  background: #0f0;
+  border: none;
+  padding: 8px 16px;
+  margin: 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: monospace;
+  transition: all 0.2s ease-in-out;
+}
+button:hover {
+  background: #00ff88;
+  color: #000;
+  box-shadow: 0 0 15px #00ff88;
+}
+
+/* Table */
+table {
+  border-collapse: collapse;
+  margin-top: 10px;
+  width: 100%;
+  min-width: 600px; /* ensure table scrolls horizontally if too wide */
+}
+th, td {
+  border: 1px solid #333;
+  padding: 6px;
+}
+th {
+  background: #111;
+  color: #00ff88;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+td {
+  background: #000;
+  color: #0f0;
+}
+tr:hover td {
+  background-color: rgba(0, 255, 0, 0.1); /* subtle row hover effect */
+}
+
+/* Success/Error */
+.success { color: #00ff88; margin-top: 6px; }
+.error { color: #ff5555; margin-top: 6px; }
+
+/* Help Section */
+.help-section {
+  background-color: #111;
+  color: #33ff66;
+  font-family: monospace;
+  padding: 15px;
+  margin: 20px auto;
+  border-radius: 8px;
+  max-width: 900px;
+  box-shadow: 0 0 15px rgba(0, 255, 100, 0.3);
+  border: 1px solid #00ff99;
+}
+.help-section h3 {
+  margin-top: 0;
+  color: #00ff99;
+  text-shadow: 0 0 6px #00ff99;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
+}
+.help-section code {
+  background: #000;
+  padding: 5px 7px;
+  border-radius: 4px;
+  display: inline-block;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.help-section code:hover {
+  background: #00ff99;
+  color: #000;
+  transform: scale(1.05);
+}
+
+/* 🔹 Background Falling Code Effect */
+@keyframes matrixFall {
+  0% { transform: translateY(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+.matrix {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.matrix span {
+  position: absolute;
+  top: -20px;
+  color: #0f0;
+  font-family: monospace;
+  font-size: 18px;
+  animation: matrixFall linear infinite;
+  filter: blur(0.8px);
+}
+
+/* Make output tables scrollable horizontally */
+.output table {
+  display: block;
+  overflow-x: auto;
+}

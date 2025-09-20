@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini SQL Sandbox</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="matrix"></div>
+
+  <div class="terminal">
+    <div class="header">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+      <span class="title">SQL Command Prompt</span>
+    </div>
+
+    <div class="output" id="output"></div>
+
+    <div class="input-line">
+      <span class="prompt">sql&gt;&nbsp;</span>
+      <div class="caret"></div>
+      <textarea id="cmd" rows="2" placeholder="Write your SQL here..."></textarea>
+    </div>
+
+    <button id="run">Run Query</button>
+    <button id="showSchema">Show Columns</button>
+    <div id="schema" style="margin-top:8px;"></div>
+  </div>
+
+  <div class="help-section">
+    <h3>💡 SQL Help & Examples (click to copy)</h3>
+    <ul>
+      <li><code>SELECT * FROM enrichment;</code></li>
+      <li><code>SELECT Term, p_value FROM enrichment;</code></li>
+      <li><code>SELECT * FROM enrichment WHERE adj_p_value &lt;= 0.05;</code></li>
+      <li><code>SELECT * FROM enrichment ORDER BY odds_ratio DESC;</code></li>
+      <li><code>SELECT COUNT(*) FROM enrichment;</code></li>
+      <li><code>SELECT Genes FROM enrichment WHERE Genes LIKE '%UBC%';</code></li>
+      <li><code>SELECT * FROM enrichment LIMIT 10;</code></li>
+      <li><code>SELECT * FROM enrichment WHERE id = 1;</code></li>
+      <li><code>DROP TABLE enrichment;</code></li>
+      <!-- New generic commands -->
+      <li><code>ALTER TABLE enrichment ADD COLUMN new_col_name data_type;</code></li>
+      <li><code>ALTER TABLE enrichment RENAME COLUMN old_col_name TO renamed_col_name;</code></li>
+      <li><code>INSERT INTO enrichment (Term, p_value, Genes) VALUES ('example', 0.01, 'UBC');</code></li>
+    </ul>
+  </div>
+
+  <script>
+    // Matrix animation
+    const matrix = document.querySelector('.matrix');
+    for (let i = 0; i < 80; i++) {
+      const span = document.createElement('span');
+      span.textContent = Math.random() > 0.5 ? "0" : "1";
+      span.style.left = Math.random() * 100 + "vw";
+      span.style.animationDuration = (3 + Math.random()*5) + "s";
+      span.style.animationDelay = (Math.random()*5) + "s";
+      matrix.appendChild(span);
+    }
+
+    // Run SQL query
+    document.getElementById("run").onclick = async () => {
+      let cmd = document.getElementById("cmd").value;
+      let out = document.getElementById("output");
+
+      const res = await fetch("/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: cmd })
+      });
+
+      const data = await res.json();
+      let entry = `<div class="entry"><div class="input">sql&gt; ${cmd}</div>`;
+
+      if (data.status === "ok") {
+        if (data.rows && data.rows.length > 0) {
+          entry += "<table><tr>";
+          for (let key in data.rows[0]) entry += `<th>${key}</th>`;
+          entry += "</tr>";
+          data.rows.forEach(r => {
+            entry += "<tr>";
+            for (let key in r) entry += `<td>${r[key]}</td>`;
+            entry += "</tr>";
+          });
+          entry += "</table>";
+        } else {
+          entry += `<div class="success">${data.message || "Query executed successfully."}</div>`;
+        }
+      } else {
+        entry += `<div class="error">Error: ${data.error}</div>`;
+      }
+
+      entry += "</div>";
+      out.innerHTML += entry;
+      out.scrollTop = out.scrollHeight;
+    };
+
+    // Show schema
+    document.getElementById("showSchema").onclick = async () => {
+      const r = await fetch("/schema");
+      const j = await r.json();
+      document.getElementById("schema").innerHTML = '<b>Columns:</b> ' + j.columns.join(", ");
+    };
+
+    // Copy from help section
+    document.querySelectorAll('.help-section code').forEach(el => {
+      el.addEventListener('click', () => {
+        document.getElementById('cmd').value = el.textContent;
+      });
+    });
+  </script>
+</body>
+</html>
